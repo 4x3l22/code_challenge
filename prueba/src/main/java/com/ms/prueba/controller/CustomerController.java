@@ -1,7 +1,9 @@
 package com.ms.prueba.controller;
 
 import com.ms.prueba.dto.CustomerDto;
+import com.ms.prueba.dto.CustomerLifeProjection;
 import com.ms.prueba.entity.Customer;
+import com.ms.prueba.repository.interfaces.AgeStatsProjection;
 import com.ms.prueba.service.implement.BaseService;
 import com.ms.prueba.service.implement.CustomerService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -10,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -39,5 +43,15 @@ public class CustomerController extends BaseController<Customer>{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/age-stats")
+    public ResponseEntity<AgeStatsProjection> getAgeStats() {
+        return ResponseEntity.ok(customerService.getAgeStats());
+    }
+
+    @GetMapping("/life-expectancy")
+    public ResponseEntity<List<CustomerLifeProjection>> getCustomersWithExpectedDeathDate() {
+        return ResponseEntity.ok(customerService.getCustomersWithLifeExpectancy());
     }
 }

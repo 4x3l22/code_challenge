@@ -1,16 +1,28 @@
 package com.ms.prueba.service.implement;
 
 import com.ms.prueba.dto.CustomerDto;
+import com.ms.prueba.dto.CustomerLifeProjection;
 import com.ms.prueba.entity.Customer;
+import com.ms.prueba.repository.interfaces.AgeStatsProjection;
 import com.ms.prueba.repository.interfaces.BaseRepository;
+import com.ms.prueba.repository.interfaces.CustomerRepository;
 import com.ms.prueba.service.interfaces.ICustomerService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService extends BaseService<Customer> implements ICustomerService {
 
-    protected CustomerService(BaseRepository<Customer, Long> repository, AuditoriaService auditService) {
+    private CustomerRepository customerRepository;
+    private static final int LIFE_EXPECTANCY_YEARS = 75;
+
+    protected CustomerService(BaseRepository<Customer, Long> repository, AuditoriaService auditService, CustomerRepository customerRepository) {
         super(repository, auditService);
+        this.customerRepository = customerRepository;
     }
 
     public void createCustomer(CustomerDto customerDto) throws Exception {
@@ -24,5 +36,27 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
         customer.setUpdateAt(customerDto.getUpdatedAt());
 
         super .save(customer);
+    }
+
+    public AgeStatsProjection getAgeStats() {
+        return customerRepository.findAgeStatistics();
+    }
+
+    public List<CustomerLifeProjection> getCustomersWithLifeExpectancy() {
+        return customerRepository.findAll().stream().map(customer -> {
+            LocalDate birthDate = customer.getBirthDate().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            LocalDate expectedDeathDate = birthDate.plusYears(LIFE_EXPECTANCY_YEARS);
+
+            return new CustomerLifeProjection(
+                    customer.getName(),
+                    customer.getLastName(),
+                    customer.getAge(),
+                    birthDate,
+                    expectedDeathDate
+            );
+        }).collect(Collectors.toList());
     }
 }

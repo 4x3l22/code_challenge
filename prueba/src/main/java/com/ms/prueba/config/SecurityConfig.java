@@ -17,8 +17,8 @@ public class SecurityConfig {
                         .requestMatchers("/login",
                                 "/css/**",
                                 "/js/**",
-                                "/api/v1/customer/createUser", // ← ruta que quieres dejar libre
-                                "/swagger-ui/**",              // Swagger UI si lo usas
+                                "/api/v1/customer/createUser",
+                                "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .anyRequest().authenticated()
