@@ -21,7 +21,7 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
     private CustomerRepository customerRepository;
     private static final int LIFE_EXPECTANCY_YEARS = 75;
 
-    protected CustomerService(BaseRepository<Customer, Long> repository, AuditoriaService auditService, CustomerRepository customerRepository) {
+    public CustomerService(BaseRepository<Customer, Long> repository, AuditoriaService auditService, CustomerRepository customerRepository) {
         super(repository, auditService);
         this.customerRepository = customerRepository;
     }

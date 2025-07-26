@@ -22,15 +22,14 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customOpenAPI(TokenStorage tokenStorage) {
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
-                .components(new Components()
-                        .addSecuritySchemes("BearerAuth",
-                                new io.swagger.v3.oas.models.security.SecurityScheme()
-                                        .type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+                .components(new Components().addSecuritySchemes("BearerAuth",
+                        new io.swagger.v3.oas.models.security.SecurityScheme()
+                                .type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
     }
 
     @Bean

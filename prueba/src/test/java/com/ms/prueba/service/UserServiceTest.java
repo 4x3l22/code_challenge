@@ -13,6 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+/**
+ * Pruebas unitarias para {@link UserService}.
+ * Se validan los casos de autenticación de usuario usando {@code UserRepository}.
+ */
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
@@ -24,11 +29,18 @@ public class UserServiceTest {
 
     private UserService userService;
 
+    /**
+     * Configura el servicio y los mocks antes de cada prueba.
+     */
     @BeforeEach
     void setUp() {
         userService = new UserService(userRepository, auditoriaService);
     }
 
+    /**
+     * Verifica que el método {@code authenticate} retorne un objeto {@link UserDto}
+     * cuando el usuario existe en la base de datos.
+     */
     @Test
     void authenticate_ShouldReturnUserDto_WhenUserExists() {
         // Arrange
@@ -38,7 +50,7 @@ public class UserServiceTest {
         mockUser.setUsername(username);
         mockUser.setPassword(password);
 
-        Mockito.when(userRepository.getUserWithRole(username, password)).thenReturn(mockUser);
+        when(userRepository.getUserWithRole(username, password)).thenReturn(mockUser);
 
         // Act
         UserDto result = userService.authenticate(username, password);
@@ -48,11 +60,14 @@ public class UserServiceTest {
         assertEquals(username, result.getUsername());
     }
 
+    /**
+     * Verifica que el método {@code authenticate} retorne {@code null}
+     * cuando el usuario no es encontrado en la base de datos.
+     */
     @Test
     void authenticate_ShouldReturnNull_WhenUserNotFound() {
         // Arrange
-        Mockito.when(userRepository.getUserWithRole("wrong", "wrong"))
-                .thenReturn(null);
+        when(userRepository.getUserWithRole("wrong", "wrong")).thenReturn(null);
 
         // Act
         UserDto result = userService.authenticate("wrong", "wrong");
@@ -61,4 +76,3 @@ public class UserServiceTest {
         assertNull(result);
     }
 }
-
