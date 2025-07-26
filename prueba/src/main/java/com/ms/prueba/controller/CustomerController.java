@@ -7,6 +7,10 @@ import com.ms.prueba.repository.interfaces.AgeStatsProjection;
 import com.ms.prueba.service.implement.BaseService;
 import com.ms.prueba.service.implement.CustomerService;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
+@Tag(name = "Clientes", description = "Operaciones relacionadas con clientes")
 @RequestMapping("api/v1/customer")
 public class CustomerController extends BaseController<Customer>{
 
@@ -33,7 +38,14 @@ public class CustomerController extends BaseController<Customer>{
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Operación no permitida para productos");
     }
 
-
+    @Operation(
+            summary = "Crear un nuevo cliente",
+            description = "Registra un cliente en la base de datos con nombre, edad, fecha de nacimiento, etc."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Cliente creado exitosamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @PostMapping("/createUser")
     public ResponseEntity<String> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
         try{
