@@ -1,8 +1,6 @@
 package com.ms.prueba.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,4 +21,7 @@ public class User extends BaseEntity{
     private String password;
     @Column(name = "rol", nullable = false, length = 100)
     private String rol;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
 }
