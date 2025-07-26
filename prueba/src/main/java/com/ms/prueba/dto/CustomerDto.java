@@ -14,16 +14,12 @@ import java.util.Date;
 public class CustomerDto {
 
     @Schema(description = "Nombres del cliente", example = "Juan")
-    @NotBlank
     private String name;
     @Schema(description = "Apellidos del cliente", example = "Ramírez")
-    @NotBlank
     private String lastName;
     @Schema(description = "Edad del cliente", example = "21")
-    @NotBlank
     private int age;
-    @Schema(description = "Fecha de nacimiento del cliente", example = "2004-06-14")
-    @NotBlank
+    @Schema(description = "Fecha de nacimiento del cliente", example = "2004-06-14T18:37:36.215Z")
     private Date birthDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

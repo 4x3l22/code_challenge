@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @Getter
 @Entity
-@Table(name = "clientes")
+@Table(name = "customer")
 public class Customer extends BaseEntity {
 
     @NotBlank(message = "El nombre no puede estar vacio")

@@ -7,6 +7,7 @@ import com.ms.prueba.repository.interfaces.AgeStatsProjection;
 import com.ms.prueba.repository.interfaces.BaseRepository;
 import com.ms.prueba.repository.interfaces.CustomerRepository;
 import com.ms.prueba.service.interfaces.ICustomerService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -42,7 +43,7 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
         super.save(customer);
     }
 
-
+    @Cacheable("ageStats")
     public AgeStatsProjection getAgeStats() {
         AgeStatsProjection stats = customerRepository.findAgeStatistics();
         if (stats == null) {
@@ -51,6 +52,7 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
         return stats;
     }
 
+    @Cacheable("lifeExpect")
     public List<CustomerLifeProjection> getCustomersWithLifeExpectancy() {
         List<Customer> customers = customerRepository.findAll();
 
