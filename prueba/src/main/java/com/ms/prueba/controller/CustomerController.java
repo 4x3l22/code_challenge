@@ -31,13 +31,19 @@ public class CustomerController extends BaseController<Customer>{
         super(service);
         this.customerService = customerService;
     }
-
+//    Apis que son ignoradas
     @Override
     @Hidden
     public ResponseEntity<Customer> save(@RequestBody Customer entity) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Operación no permitida para productos");
     }
+    @Override
+    @Hidden
+    public List<Customer> all() throws Exception{
+        throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Operacion no permitida para productos");
+    }
 
+//    Apis funcionales
     @Operation(
             summary = "Crear un nuevo cliente",
             description = "Registra un cliente en la base de datos con nombre, edad, fecha de nacimiento, etc."
@@ -57,11 +63,27 @@ public class CustomerController extends BaseController<Customer>{
         }
     }
 
+    @Operation(
+            summary = "Obtener estadísticas de edad de los clientes",
+            description = "Devuelve el promedio de edad y la desviación estándar de todos los clientes registrados en la base de datos."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Estadísticas obtenidas correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno al obtener las estadísticas")
+    })
     @GetMapping("/age-stats")
     public ResponseEntity<AgeStatsProjection> getAgeStats() {
         return ResponseEntity.ok(customerService.getAgeStats());
     }
 
+    @Operation(
+            summary = "Listar clientes con fecha estimada de muerte",
+            description = "Devuelve una lista de todos los clientes registrados con sus datos completos, incluyendo una fecha estimada de fallecimiento basada en la esperanza de vida calculada."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno al procesar los datos")
+    })
     @GetMapping("/life-expectancy")
     public ResponseEntity<List<CustomerLifeProjection>> getCustomersWithExpectedDeathDate() {
         return ResponseEntity.ok(customerService.getCustomersWithLifeExpectancy());

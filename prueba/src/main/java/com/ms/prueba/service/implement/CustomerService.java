@@ -26,6 +26,10 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
     }
 
     public void createCustomer(CustomerDto customerDto) throws Exception {
+        if (customerDto == null) {
+            throw new IllegalArgumentException("El cuerpo del cliente no puede estar vacío");
+        }
+
         Customer customer = new Customer();
 
         customer.setName(customerDto.getName());
@@ -35,15 +39,26 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
         customer.setCreateAt(customerDto.getCreatedAt());
         customer.setUpdateAt(customerDto.getUpdatedAt());
 
-        super .save(customer);
+        super.save(customer);
     }
 
+
     public AgeStatsProjection getAgeStats() {
-        return customerRepository.findAgeStatistics();
+        AgeStatsProjection stats = customerRepository.findAgeStatistics();
+        if (stats == null) {
+            throw new IllegalArgumentException("No se encontraron estadísticas de edad");
+        }
+        return stats;
     }
 
     public List<CustomerLifeProjection> getCustomersWithLifeExpectancy() {
-        return customerRepository.findAll().stream().map(customer -> {
+        List<Customer> customers = customerRepository.findAll();
+
+        if (customers == null || customers.isEmpty()) {
+            throw new IllegalArgumentException("No hay clientes registrados en el sistema");
+        }
+
+        return customers.stream().map(customer -> {
             LocalDate birthDate = customer.getBirthDate().toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
