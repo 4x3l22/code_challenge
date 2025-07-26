@@ -12,8 +12,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login",
+                                "/css/**",
+                                "/js/**",
+                                "/api/v1/customer/createUser", // ← ruta que quieres dejar libre
+                                "/swagger-ui/**",              // Swagger UI si lo usas
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

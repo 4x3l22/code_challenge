@@ -24,7 +24,7 @@ public class Customer extends BaseEntity {
     @NotBlank(message = "El apellido no puede estar vacio")
     @Size(min = 3, message = "El apellido debe tener por lo menos tres caracteres")
     @Column(name = "lastName", length = 500, nullable = false)
-    private String LastName;
+    private String lastName;
 
     @Column(name = "age", length = 100, nullable = false)
     private int age;

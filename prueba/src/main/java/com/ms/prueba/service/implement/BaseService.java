@@ -28,7 +28,7 @@ public abstract class BaseService<T extends BaseEntity> implements IBaseService<
         List<T> resul = new ArrayList<>();
 
         for(T item: entities){
-            if(item.getCreateAdd() == null){
+            if(item.getCreateAt() == null){
                 resul.add(item);
             }
         }
@@ -42,7 +42,7 @@ public abstract class BaseService<T extends BaseEntity> implements IBaseService<
 
     @Override
     public T save(T entity) throws Exception{
-        if(entity.getCreateAdd() == null){
+        if(entity.getCreateAt() == null){
             auditService.setAuditoriaOnCreate(entity);
         }else{
             auditService.setAuditoriaOnUpdate(entity);
@@ -60,7 +60,7 @@ public abstract class BaseService<T extends BaseEntity> implements IBaseService<
 
         String[] ignoreProperties = { "id", "fechaCreacion", "fechaEliminacion"};
         BeanUtils.copyProperties(entity, objetoToUpdate, ignoreProperties);
-        objetoToUpdate.setCreateAdd(objetoToUpdate.getCreateAdd());
+        objetoToUpdate.setCreateAt(objetoToUpdate.getCreateAt());
         auditService.setAuditoriaOnUpdate(objetoToUpdate);
         this.repository.save(objetoToUpdate);
     }

@@ -15,13 +15,13 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "createAdd", nullable = false)
-    private LocalDateTime createAdd;
+    @Column(name = "createAt", nullable = false)
+    private LocalDateTime createAt;
 
-    @Column(name = "updateAdd", nullable = false)
-    private LocalDateTime updateAdd;
+    @Column(name = "updateAt", nullable = false)
+    private LocalDateTime updateAt;
 
-    @Column(name = "deleteAdd", nullable = true)
-    private LocalDateTime deleteAdd;
+    @Column(name = "deleteAt", nullable = true)
+    private LocalDateTime deleteAt;
 
 }
