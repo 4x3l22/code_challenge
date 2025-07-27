@@ -9,7 +9,7 @@ public interface CustomerRepository extends BaseRepository<Customer, Long>{
     SELECT 
         AVG(age) AS average,
         STDDEV(age) AS stddev
-    FROM clientes
+    FROM customer
 """, nativeQuery = true)
     AgeStatsProjection findAgeStatistics();
 
