@@ -1,5 +1,6 @@
 package com.ms.prueba.controller;
 
+import com.ms.prueba.dto.ApiResponseDto;
 import com.ms.prueba.dto.CustomerDto;
 import com.ms.prueba.dto.CustomerLifeProjection;
 import com.ms.prueba.entity.Customer;
@@ -39,7 +40,7 @@ public class CustomerController extends BaseController<Customer>{
     }
     @Override
     @Hidden
-    public List<Customer> all() throws Exception{
+    public ResponseEntity<ApiResponseDto<List<Customer>>> all() throws Exception{
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Operacion no permitida para productos");
     }
 

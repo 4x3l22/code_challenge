@@ -1,5 +1,6 @@
 package com.ms.prueba.controller;
 
+import com.ms.prueba.dto.ApiResponseDto;
 import com.ms.prueba.entity.BaseEntity;
 import com.ms.prueba.service.implement.BaseService;
 import org.springframework.beans.BeanUtils;
@@ -21,17 +22,24 @@ public abstract class BaseController<T extends BaseEntity> {
     }
 
     @GetMapping
-    public List<T> all() throws Exception{
-        return baseService.all();
+    public ResponseEntity<ApiResponseDto<List<T>>>  all() throws Exception{
+        try {
+            return ResponseEntity.ok(new ApiResponseDto("Datos obtenidos",  baseService.all(), true));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ApiResponseDto<List<T>>(e.getMessage(), null, false));
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<T>> findById(@PathVariable Long id) throws Exception{
-        Optional<T> entity = baseService.findById(id);
-        if(entity.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(entity);
+    public ResponseEntity<ApiResponseDto<Optional<T>>> findById(@PathVariable Long id) throws Exception{
+
+        try {
+            Optional<T> entity = baseService.findById(id);
+            return ResponseEntity.ok(new ApiResponseDto<Optional<T>>("Registro encontrado", entity, true));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ApiResponseDto<Optional<T>>(e.getMessage(), null, false));
         }
-        return ResponseEntity.ok(entity);
+
     }
 
     @PostMapping
@@ -46,18 +54,25 @@ public abstract class BaseController<T extends BaseEntity> {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody T entity) throws Exception{
+
         try {
             baseService.update(id, entity);
-            return ResponseEntity.ok(entity);
+            return ResponseEntity.ok(new ApiResponseDto<T>("Datos actualizados", null, true));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al actualizar el registro con ID " + id + ": " + e.getMessage());
+            return ResponseEntity.internalServerError().body(new ApiResponseDto<T>(e.getMessage(), null, false));
         }
+
     }
 
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) throws Exception{
-        baseService.delete(id);
+    public  ResponseEntity<ApiResponseDto<T>> delete(@PathVariable Long id) throws Exception{
+        try {
+            baseService.delete(id);
+            return ResponseEntity.ok(new ApiResponseDto<T>("Registro eliminado", null, true));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ApiResponseDto<T>(e.getMessage(), null, false));
+        }
+
     }
 }
