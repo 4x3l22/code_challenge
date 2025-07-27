@@ -1,14 +1,20 @@
 package com.ms.prueba.config;
 
+import com.ms.prueba.dto.UserDto;
+import com.ms.prueba.repository.interfaces.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * Utilidad para la generación, validación y extracción de información desde tokens JWT.
@@ -16,6 +22,10 @@ import java.util.Date;
  */
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private UserRepository userRepository; // o IUserService si tienes uno
+
 
     // Clave secreta para firmar el token. Debe ser suficientemente larga y segura.
     private final String secret = "miSuperClaveSecretaJWTQueDebeSerLarga1234567890";
@@ -39,10 +49,19 @@ public class JwtUtil {
      * @param role     Rol del usuario.
      * @return Token JWT firmado.
      */
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
+        // Suponiendo que lograste obtener el objeto User desde el UserDetails:
+        String role = "ROLE_" + ((UserDto) userRepository.findByUsername(username)).getRol();
+
+
+        System.out.println("role de prove"+ role);
+
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("authorities", authorities.stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

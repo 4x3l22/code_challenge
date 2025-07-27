@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
         name = "SwaggerToken",
         description = "Proporciona un endpoint para obtener el token JWT almacenado, el cual puede ser utilizado como autorización Bearer en futuras peticiones a la API."
 )
-@RequestMapping("api/v1/swagger-token")
 public class SwaggerTokenController {
 
     private final TokenStorage tokenStorage;

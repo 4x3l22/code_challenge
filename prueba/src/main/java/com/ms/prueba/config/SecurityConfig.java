@@ -49,28 +49,28 @@ public class SecurityConfig {
                 // Configuración de las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos que no requieren autenticación
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/**").hasAnyRole("ADMIN", "USER","MODERATOR")
+
                         .requestMatchers(
                                 "/login",
                                 "/css/**",
                                 "/js/**",
                                 "/api/v1/customer/createUser",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/swagger-token",
+                                "/prueba/swagger-token"
                         ).permitAll()
                        // .requestMatchers("/swagger-token").permitAll()
-
-                        // Reglas basadas en roles para los diferentes métodos HTTP
-                        .requestMatchers(HttpMethod.GET, "/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
-
                         // Cualquier otra petición requiere autenticación
                         .anyRequest().authenticated()
                 )
 
+
                 // Configuración del login por formulario
                 .formLogin(form -> form
+
                         .successHandler(successHandler) // Manejador personalizado al autenticarse correctamente
                         .permitAll()
                 )

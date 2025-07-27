@@ -4,6 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -61,12 +62,14 @@ public class JwtAuthenticationFilter extends GenericFilter {
                 String username = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
 
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                                List.of(new SimpleGrantedAuthority( role))
                         );
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
@@ -95,12 +98,13 @@ public class JwtAuthenticationFilter extends GenericFilter {
      */
     private boolean requiresAuth(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return !path.startsWith("/prueba/login")
-                && !path.startsWith("/prueba/swagger-token")
-                && !path.startsWith("/prueba/swagger-ui")
-                && !path.startsWith("/prueba/v3/api-docs")
-                && !path.startsWith("/prueba/api/v1/customer/createUser");
-
+        System.out.println("Request path: " + path);
+        return !(path.equals("/prueba/login")
+                || path.equals("/prueba/swagger-token")
+                || path.startsWith("/prueba/swagger-ui")
+                || path.startsWith("/prueba/v3/api-docs")
+                || path.equals("/prueba/api/v1/customer/createUser"));
     }
+
 
 }

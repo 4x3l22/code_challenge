@@ -1,6 +1,7 @@
 package com.ms.prueba.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ms.prueba.dto.UserDto;
 import com.ms.prueba.service.implement.TokenStorage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,8 +63,10 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 .orElse("ROLE_USER")
                 .replace("ROLE_", "");
 
+
         // Generar el token JWT
-        String token = jwtUtil.generateToken(username, role);
+        String token = jwtUtil.generateToken(username, authentication.getAuthorities());
+
 
         // Almacenar temporalmente el token (por ejemplo, en memoria)
         tokenStorage.saveToken(token);

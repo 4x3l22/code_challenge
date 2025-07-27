@@ -5,6 +5,8 @@ import com.ms.prueba.entity.User;
 import com.ms.prueba.repository.interfaces.BaseRepository;
 import com.ms.prueba.repository.interfaces.UserRepository;
 import com.ms.prueba.service.interfaces.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserService extends BaseService<User> implements IUserService {
+
 
     private final UserRepository userRepository;
 
@@ -49,4 +52,6 @@ public class UserService extends BaseService<User> implements IUserService {
 
         return user;
     }
+
+
 }
