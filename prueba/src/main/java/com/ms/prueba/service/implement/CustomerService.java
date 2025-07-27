@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
         this.customerRepository = customerRepository;
     }
 
-    public void createCustomer(CustomerDto customerDto) throws Exception {
+    public Optional<CustomerDto> createCustomer(CustomerDto customerDto) throws Exception {
         if (customerDto == null) {
             throw new IllegalArgumentException("El cuerpo del cliente no puede estar vacío");
         }
@@ -41,6 +42,7 @@ public class CustomerService extends BaseService<Customer> implements ICustomerS
         customer.setUpdateAt(customerDto.getUpdatedAt());
 
         super.save(customer);
+        return null;
     }
 
     @Cacheable("ageStats")

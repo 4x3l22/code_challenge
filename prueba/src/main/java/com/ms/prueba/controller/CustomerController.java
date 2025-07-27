@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin("*")
 @RestController
@@ -53,16 +54,30 @@ public class CustomerController extends BaseController<Customer>{
             @ApiResponse(responseCode = "200", description = "Cliente creado exitosamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    @PostMapping("/createUser")
-    public ResponseEntity<String> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
-        try{
-            customerService.createCustomer(customerDto);
-            return ResponseEntity.ok("Customer created");
+    @PostMapping("/createCustomer")
+    public ResponseEntity<ApiResponseDto<Optional<CustomerDto>>> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
+        try {
+            Optional<CustomerDto> createdCustomer = customerService.createCustomer(customerDto);
+
+            ApiResponseDto<Optional<CustomerDto>> response = new ApiResponseDto<>(
+                    "Customer created",
+                    createdCustomer,
+                    true
+            );
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+            ApiResponseDto<Optional<CustomerDto>> errorResponse = new ApiResponseDto<>(
+                    "Error: " + e.getMessage(),
+                    Optional.empty(),
+                    false
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
 
     @Operation(
             summary = "Obtener estadísticas de edad de los clientes",
@@ -73,9 +88,28 @@ public class CustomerController extends BaseController<Customer>{
             @ApiResponse(responseCode = "500", description = "Error interno al obtener las estadísticas")
     })
     @GetMapping("/age-stats")
-    public ResponseEntity<AgeStatsProjection> getAgeStats() {
-        return ResponseEntity.ok(customerService.getAgeStats());
+    public ResponseEntity<ApiResponseDto<AgeStatsProjection>> getAgeStats() {
+        try {
+            AgeStatsProjection stats = customerService.getAgeStats();
+
+            ApiResponseDto<AgeStatsProjection> response = new ApiResponseDto<>(
+                    "Age statistics retrieved successfully",
+                    stats,
+                    true
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponseDto<AgeStatsProjection> errorResponse = new ApiResponseDto<>(
+                    "Error: " + e.getMessage(),
+                    null,
+                    false
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
+
 
     @Operation(
             summary = "Listar clientes con fecha estimada de muerte",
@@ -86,7 +120,26 @@ public class CustomerController extends BaseController<Customer>{
             @ApiResponse(responseCode = "500", description = "Error interno al procesar los datos")
     })
     @GetMapping("/life-expectancy")
-    public ResponseEntity<List<CustomerLifeProjection>> getCustomersWithExpectedDeathDate() {
-        return ResponseEntity.ok(customerService.getCustomersWithLifeExpectancy());
+    public ResponseEntity<ApiResponseDto<List<CustomerLifeProjection>>> getCustomersWithExpectedDeathDate() {
+        try {
+            List<CustomerLifeProjection> data = customerService.getCustomersWithLifeExpectancy();
+
+            ApiResponseDto<List<CustomerLifeProjection>> response = new ApiResponseDto<>(
+                    "Customers with expected death date retrieved successfully",
+                    data,
+                    true
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponseDto<List<CustomerLifeProjection>> errorResponse = new ApiResponseDto<>(
+                    "Error: " + e.getMessage(),
+                    null,
+                    false
+            );
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
+
 }
