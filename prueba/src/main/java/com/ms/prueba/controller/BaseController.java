@@ -14,7 +14,6 @@ import java.util.Optional;
 
 public abstract class BaseController<T extends BaseEntity> {
 
-    //    @Autowired
     private final BaseService<T> baseService;
 
     protected BaseController(BaseService<T> baseService) {
@@ -22,57 +21,61 @@ public abstract class BaseController<T extends BaseEntity> {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponseDto<List<T>>>  all() throws Exception{
+    public ResponseEntity<ApiResponseDto<List<T>>> all() {
         try {
-            return ResponseEntity.ok(new ApiResponseDto("Datos obtenidos",  baseService.all(), true));
+            List<T> data = baseService.all();
+            return ResponseEntity.ok(new ApiResponseDto<>("Datos obtenidos", data, true));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ApiResponseDto<List<T>>(e.getMessage(), null, false));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDto<>("Error: " + e.getMessage(), null, false));
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponseDto<Optional<T>>> findById(@PathVariable Long id) throws Exception{
-
+    public ResponseEntity<ApiResponseDto<T>> findById(@PathVariable Long id) {
         try {
-            Optional<T> entity = baseService.findById(id);
-            return ResponseEntity.ok(new ApiResponseDto<Optional<T>>("Registro encontrado", entity, true));
+            return baseService.findById(id)
+                    .map(entity -> ResponseEntity.ok(new ApiResponseDto<>("Registro encontrado", entity, true)))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ApiResponseDto<>("Registro no encontrado", null, false)));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ApiResponseDto<Optional<T>>(e.getMessage(), null, false));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDto<>("Error: " + e.getMessage(), null, false));
         }
-
     }
 
     @PostMapping
-    public ResponseEntity<T> save(@RequestBody T entity) throws Exception{
+    public ResponseEntity<ApiResponseDto<T>> save(@RequestBody T entity) {
         try {
-            T saveEntity = baseService.save(entity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(saveEntity);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(entity);
+            T savedEntity = baseService.save(entity);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponseDto<>("Registro creado", savedEntity, true));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseDto<>("Error al crear: " + e.getMessage(), null, false));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody T entity) throws Exception{
-
+    public ResponseEntity<ApiResponseDto<Void>> update(@PathVariable Long id, @RequestBody T entity) {
         try {
             baseService.update(id, entity);
-            return ResponseEntity.ok(new ApiResponseDto<T>("Datos actualizados", null, true));
+            return ResponseEntity.ok(new ApiResponseDto<>("Datos actualizados", null, true));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ApiResponseDto<T>(e.getMessage(), null, false));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDto<>("Error al actualizar: " + e.getMessage(), null, false));
         }
-
     }
-
 
     @DeleteMapping("/{id}")
-    public  ResponseEntity<ApiResponseDto<T>> delete(@PathVariable Long id) throws Exception{
+    public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable Long id) {
         try {
             baseService.delete(id);
-            return ResponseEntity.ok(new ApiResponseDto<T>("Registro eliminado", null, true));
+            return ResponseEntity.ok(new ApiResponseDto<>("Registro eliminado", null, true));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ApiResponseDto<T>(e.getMessage(), null, false));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponseDto<>("Error al eliminar: " + e.getMessage(), null, false));
         }
-
     }
 }
+

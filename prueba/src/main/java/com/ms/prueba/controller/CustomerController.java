@@ -36,12 +36,12 @@ public class CustomerController extends BaseController<Customer>{
 //    Apis que son ignoradas
     @Override
     @Hidden
-    public ResponseEntity<Customer> save(@RequestBody Customer entity) {
+    public ResponseEntity<ApiResponseDto<Customer>> save(@RequestBody Customer entity) {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Operación no permitida para productos");
     }
     @Override
     @Hidden
-    public ResponseEntity<ApiResponseDto<List<Customer>>> all() throws Exception{
+    public ResponseEntity<ApiResponseDto<List<Customer>>> all() {
         throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Operacion no permitida para productos");
     }
 
