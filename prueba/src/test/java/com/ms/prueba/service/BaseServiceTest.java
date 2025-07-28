@@ -42,22 +42,24 @@ public class BaseServiceTest {
      * Verifica que el método {@code all()} solo retorne entidades cuya fecha de creación {@code createAt} sea nula.
      */
     @Test
-    public void all_ShouldReturnOnlyItemsWithNullCreateAt() throws Exception {
+    public void all_ShouldReturnAllItems() throws Exception {
         TestEntity e1 = new TestEntity(1L, "A");
-        e1.setCreateAt(null);
+
 
         TestEntity e2 = new TestEntity(2L, "B");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse("2023-01-01 10:00:00", formatter);
         e2.setCreateAt(dateTime);
-
+        e1.setCreateAt(dateTime);
         when(testRepository.findAll()).thenReturn(List.of(e1, e2));
 
         List<TestEntity> result = testService.all();
 
-        assertEquals(1, result.size());
+        assertEquals(2, result.size());
         assertEquals("A", result.get(0).getName());
+        assertEquals("B", result.get(1).getName());
     }
+
 
     /**
      * Verifica que al guardar una entidad sin fecha de creación, se invoque la auditoría
