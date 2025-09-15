@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+  reporting-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crediya-reporting-service
+    restart: unless-stopped
+
+    # Carga variables desde .env
+    env_file:
+      - .env
+
+    environment:
+      # Perfil Docker
+      SPRING_PROFILES_ACTIVE: docker
+
+      # Server
+      SERVER_PORT: ${REPORTING_SERVER_PORT}
+
+      # CORS
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+
+      # Seguridad / JWT (mapean a security.secret, security.expiration-sec, security.issuer)
+      SECURITY_SECRET: ${SECURITY_SECRET}
+      SECURITY_EXPIRATION_SEC: ${SECURITY_EXPIRATION_SEC}
+      SECURITY_ISSUER: ${SECURITY_ISSUER}
+      SECURITY_ISSUER_URI: ${SECURITY_ISSUER_URI}
+
+      # AWS / Región
+      AWS_REGION: ${AWS_REGION}
+
+      # Dynamo (app.dynamo.*)
+      APP_DYNAMO_TABLE: ${APP_DYNAMO_TABLE}
+      APP_DYNAMO_GSI: ${APP_DYNAMO_GSI}
+      APP_DYNAMO_PK: ${APP_DYNAMO_PK}
+
+      # SQS (entrypoint.sqs.*)
+      ENTRYPOINT_SQS_REGION: ${AWS_REGION}
+      ENTRYPOINT_SQS_QUEUEURL: ${ENTRYPOINT_SQS_QUEUEURL}
+      ENTRYPOINT_SQS_WAITTIMESECONDS: ${ENTRYPOINT_SQS_WAITTIMESECONDS}
+      ENTRYPOINT_SQS_MAXNUMBEROFMESSAGES: ${ENTRYPOINT_SQS_MAXNUMBEROFMESSAGES}
+      ENTRYPOINT_SQS_VISIBILITYTIMEOUTSECONDS: ${ENTRYPOINT_SQS_VISIBILITYTIMEOUTSECONDS}
+      ENTRYPOINT_SQS_NUMBEROFTHREADS: ${ENTRYPOINT_SQS_NUMBEROFTHREADS}
+
+      # Actuator / Prometheus
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+      MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+
+      # Springdoc / Swagger
+      SPRINGDOC_API_DOCS_PATH: /v3/api-docs
+      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui
+      SPRINGDOC_SWAGGER_UI_OPERATIONSSORTER: method
+      SPRINGDOC_SWAGGER_UI_TAGSSORTER: alpha
+
+      # JVM
+      JAVA_OPTS: ${JAVA_OPTS}
+
+      # (Opcional) consumidor REST hacia IAM por DNS interno de Docker
+      ADAPTER_RESTCONSUMER_URL: ${ADAPTER_RESTCONSUMER_URL}
+
+      # (Opcional) Credenciales AWS si vas contra la nube real
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+    ports:
+      - "${HOST_PORT:-8080}:8080"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
+
+    networks:
+      - crediya-network
+
+networks:
+  crediya-network:
+    external: true
+    name: crediya-network

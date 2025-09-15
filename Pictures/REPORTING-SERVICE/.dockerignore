@@ -1,0 +1,29 @@
+# --- Ignora TODO por defecto ---
+**
+
+# --- Permite lo necesario para construir con Gradle ---
+!gradlew
+!gradlew.bat
+!gradle/
+!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+!settings.gradle
+!build.gradle
+!main.gradle
+!gradle.properties
+!lombok.config
+
+# Código fuente (ajusta rutas según tu repo)
+!applications/
+!applications/**
+
+!src/
+!src/**
+
+# Permite archivos de config Docker
+!Dockerfile
+!docker-compose.yml
+!.env
+!.dockerignore
