@@ -3,7 +3,6 @@ apply plugin: 'org.springframework.boot'
 dependencies {
 	implementation project(':security')
 	implementation project(':reactive-web')
-
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':dynamo-db')
 	implementation project(':metrics')
@@ -15,6 +14,15 @@ dependencies {
     testImplementation 'com.tngtech.archunit:archunit:1.4.1'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+
+    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    testImplementation 'com.tngtech.archunit:archunit:1.4.1'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.6.0"
+    implementation "org.springframework.security:spring-security-oauth2-jose:6.2.4"
 
 }
 

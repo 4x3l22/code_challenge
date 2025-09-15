@@ -1,0 +1,63 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: "crediya-reporting-service"
+  devtools:
+    add-properties: false
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: servlet
+
+# Configuración AWS para perfil local
+aws:
+  region: "us-east-2"
+  
+app:
+  dynamo:
+    table: "crediya-reports"
+    gsi: "metricId-updatedAt-index"
+    pk: "global-report"
+
+entrypoint:
+  sqs:
+    region: "us-east-2"
+    queueUrl: "https://sqs.us-east-2.amazonaws.com/889522049804/generate-reports-queue"
+    waitTimeSeconds: 20
+    maxNumberOfMessages: 10
+    visibilityTimeoutSeconds: 10
+    numberOfThreads: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus,swagger-ui"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:3000,http://localhost:8080,http://localhost:8088"
+
+springdoc:
+  api-docs.path: "/v3/api-docs"
+  swagger-ui.path: "/swagger-ui"
+  swagger-ui.operationsSorter: "method"
+  swagger-ui.tagsSorter: "alpha"
+  swagger-ui.enabled: true
+
+security:
+  secret: "QnE1T2lXbVRhV3RzR2VOUXlHaFZ2d2dyU2p2a1R2TnM="
+  expiration-sec: 3600
+  issuer: "autenticacion-service"
+  issuer-uri: ""
+
+# Configuración mínima para entorno local
+logging:
+  level:
+    com.amazonaws: ERROR
+    com.crediya: DEBUG
+    org.springframework.cloud.aws: ERROR

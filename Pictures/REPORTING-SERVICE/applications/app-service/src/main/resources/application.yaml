@@ -33,7 +33,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,prometheus"
+        include: "health,info,prometheus,swagger-ui"
   endpoint:
     health:
       probes:
@@ -45,6 +45,7 @@ springdoc:
   swagger-ui.path: "/swagger-ui"
   swagger-ui.operationsSorter: "method"
   swagger-ui.tagsSorter: "alpha"
+  swagger-ui.enabled: true
 
 security:
   secret: "QnE1T2lXbVRhV3RzR2VOUXlHaFZ2d2dyU2p2a1R2TnM="

@@ -1,0 +1,59 @@
+# =============================================================================
+# Dockerfile de DESARROLLO que saltea validaciones para debugging rápido
+# =============================================================================
+
+# ========================= FASE 1: BUILD =====================================
+FROM gradle:8.10.1-jdk21 AS build
+
+WORKDIR /home/gradle/project
+
+# --- Optimización de caché ---
+COPY gradle/ gradle/
+COPY build.gradle main.gradle gradle.properties settings.gradle gradlew gradlew.bat ./
+COPY lombok.config ./
+
+# Resolución de dependencias (capa cacheable)
+RUN gradle --no-daemon dependencies
+
+# Copia del resto del código fuente
+COPY . .
+
+# Build más rápido saltando validaciones y tests
+RUN gradle --no-daemon :app-service:clean :app-service:bootJar --no-build-cache \
+    -x validateStructure \
+    -x test \
+    -x compileTestJava \
+    -x processTestResources \
+    -x testClasses \
+    --stacktrace
+
+
+# ======================== FASE 2: RUNTIME ====================================
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# Herramientas básicas + debugging
+RUN apk add --no-cache curl tzdata procps && \
+    addgroup -S spring && \
+    adduser -S spring -G spring && \
+    chown -R spring:spring /app
+
+USER spring:spring
+
+# Copiar JAR
+COPY --from=build --chown=spring:spring /home/gradle/project/applications/app-service/build/libs/*.jar /app/app.jar
+
+# Configuración de desarrollo
+ENV TZ=UTC
+ENV SPRING_PROFILES_ACTIVE=docker
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=60.0 -Djava.security.egd=file:/dev/./urandom -Dspring.devtools.restart.enabled=false"
+
+EXPOSE 8080
+
+# Healthcheck con más tiempo para desarrollo
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=3 \
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+# Debug info al arrancar
+ENTRYPOINT ["sh", "-c", "echo 'Starting Crediya Reporting Service...' && echo 'JAR: /app/app.jar' && echo 'JAVA_OPTS: $JAVA_OPTS' && java $JAVA_OPTS -jar /app/app.jar"]

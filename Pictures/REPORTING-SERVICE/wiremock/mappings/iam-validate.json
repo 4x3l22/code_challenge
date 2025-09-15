@@ -1,0 +1,32 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/auth/validate",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "application/json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "valid": true,
+      "user": {
+        "id": "test-user-123",
+        "username": "testuser",
+        "email": "test@crediya.com",
+        "roles": ["USER", "ADMIN"],
+        "permissions": ["READ_REPORTS", "GENERATE_REPORTS"]
+      },
+      "token": {
+        "issuer": "iam-service-local",
+        "subject": "test-user-123",
+        "expiration": "{{now offset='3600' format='yyyy-MM-dd HH:mm:ss'}}"
+      }
+    }
+  }
+}

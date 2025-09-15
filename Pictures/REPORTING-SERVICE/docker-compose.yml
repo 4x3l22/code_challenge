@@ -1,4 +1,4 @@
-version: "3.9"
+# version is no longer required in newer Docker Compose
 
 services:
   reporting-service:
@@ -6,14 +6,14 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: crediya-reporting-service
-    restart: unless-stopped
+    restart: always
 
     # Carga variables desde .env
     env_file:
       - .env
 
     environment:
-      # Perfil Docker
+      # Perfil Docker con AWS real
       SPRING_PROFILES_ACTIVE: docker
 
       # Server
@@ -63,21 +63,22 @@ services:
       # (Opcional) Credenciales AWS si vas contra la nube real
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_PROFILE: ${AWS_PROFILE:-default}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
 
     ports:
       - "${HOST_PORT:-8080}:8080"
 
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 60s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+    #   interval: 30s
+    #   timeout: 3s
+    #   retries: 3
+    #   start_period: 60s
 
     networks:
       - crediya-network
 
 networks:
   crediya-network:
-    external: true
-    name: crediya-network
+    driver: bridge

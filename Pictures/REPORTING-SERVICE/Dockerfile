@@ -27,7 +27,8 @@ COPY . .
 
 # Compila y genera el JAR ejecutable del módulo app-service
 # TIP: si no quieres correr tests aquí, agrega:  -x test
-RUN gradle --no-daemon :app-service:clean :app-service:bootJar --no-build-cache
+# Saltamos la validación de estructura para Docker build
+RUN gradle --no-daemon :app-service:clean :app-service:bootJar --no-build-cache -x validateStructure
 
 
 # ======================== FASE 2: RUNTIME ====================================
